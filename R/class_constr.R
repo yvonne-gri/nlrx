@@ -1,3 +1,25 @@
+
+superclass <- function(nlversion = "6.0.2",
+               nlpath = character(),
+               modelpath = character(),
+               obj_type = "nl_obj",
+               jvmmem = 1024,
+               experiment = methods::new("experiment"),
+               simdesign = methods::new("simdesign"),
+               ...) {
+
+  methods::new("superclass",
+               nlversion = nlversion,
+               nlpath = nlpath,
+               modelpath = modelpath,
+               obj_type = obj_type,
+               jvmmem = jvmmem,
+               experiment = methods::new("experiment"),
+               simdesign = methods::new("simdesign"),
+               ...)
+}
+
+
 #' Construct a new nl object
 #'
 #' @description Construct a new nl object
@@ -5,11 +27,12 @@
 #' @param nlversion A character string defining the NetLogo version that is used
 #' @param nlpath Path to the NetLogo main directory matching the defined version
 #' @param modelpath Path to the NetLogo model file (*.nlogo) that is used for simulations
+#' @param obj_type A character string defining the object (nl, R, ...) (YYY)
 #' @param jvmmem Java virtual machine memory capacity in megabytes
 #' @param experiment Holds a experiment S4 class object
 #' @param simdesign Holds a simdesign S4 class object
 #' @param ... ...
-#' @return nl S4 class object
+#' @return superclass S4 class object
 #' @details
 #'
 #' nl objects are the main class objects used in the nlrx package.
@@ -36,30 +59,19 @@
 #' modelpath <- file.path(netlogopath, "app/models/Sample Models/Biology/Wolf Sheep Predation.nlogo")
 #' outpath <- file.path("/home/out")
 #'
+#'
 #' nl <- nl(nlversion = "6.0.3",
 #'          nlpath = netlogopath,
 #'          modelpath = modelpath,
+#'          obj_type = "nl_obj",
 #'          jvmmem = 1024)
 #'
 #' @name nl
 #' @rdname nl
 #' @export
-nl <- function(nlversion = "6.0.2",
-               nlpath = character(),
-               modelpath = character(),
-               jvmmem = 1024,
-               experiment = methods::new("experiment"),
-               simdesign = methods::new("simdesign"),
-               ...) {
 
-  methods::new("nl",
-               nlversion = nlversion,
-               nlpath = nlpath,
-               modelpath = modelpath,
-               jvmmem = jvmmem,
-               experiment = methods::new("experiment"),
-               simdesign = methods::new("simdesign"),
-               ...)
+nl <- function() {
+  methods::new("nl")
 }
 
 
@@ -202,7 +214,7 @@ nl <- function(nlversion = "6.0.2",
 #'
 #' # Example for Wolf Sheep Predation model from NetLogo models library:
 #' nl <- nl_simple
-#' nl@@experiment <- experiment(expname="wolf-sheep",
+#' nl@experiment <- experiment(expname="wolf-sheep",
 #'                              outpath="C:/out/",
 #'                              repetition=1,
 #'                              tickmetrics="true",

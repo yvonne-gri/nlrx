@@ -33,6 +33,7 @@ test_nlrx <- function(nlpath, nlversion){
   nl <- nl(nlversion = nlversion,
            nlpath = nlpath,
            modelpath = modelpath,
+           obj_type = "nl_obj",
            jvmmem = 1024)
 
   # Attach experiment

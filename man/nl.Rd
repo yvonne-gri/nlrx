@@ -8,6 +8,7 @@ nl(
   nlversion = "6.0.2",
   nlpath = character(),
   modelpath = character(),
+  obj_type = "nl_obj",
   jvmmem = 1024,
   experiment = methods::new("experiment"),
   simdesign = methods::new("simdesign"),
@@ -20,6 +21,8 @@ nl(
 \item{nlpath}{Path to the NetLogo main directory matching the defined version}
 
 \item{modelpath}{Path to the NetLogo model file (*.nlogo) that is used for simulations}
+
+\item{obj_type}{A character string defining the object (nl, R, ...) (YYY)}
 
 \item{jvmmem}{Java virtual machine memory capacity in megabytes}
 
@@ -58,9 +61,11 @@ netlogopath <- file.path("/home/NetLogo 6.0.3")
 modelpath <- file.path(netlogopath, "app/models/Sample Models/Biology/Wolf Sheep Predation.nlogo")
 outpath <- file.path("/home/out")
 
+
 nl <- nl(nlversion = "6.0.3",
          nlpath = netlogopath,
          modelpath = modelpath,
+         obj_type = "nl_obj",
          jvmmem = 1024)
 
 }
