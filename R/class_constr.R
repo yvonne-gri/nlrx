@@ -1,25 +1,4 @@
 
-superclass <- function(nlversion = "6.0.2",
-               nlpath = character(),
-               modelpath = character(),
-               obj_type = "nl_obj",
-               jvmmem = 1024,
-               experiment = methods::new("experiment"),
-               simdesign = methods::new("simdesign"),
-               ...) {
-
-  methods::new("superclass",
-               nlversion = nlversion,
-               nlpath = nlpath,
-               modelpath = modelpath,
-               obj_type = obj_type,
-               jvmmem = jvmmem,
-               experiment = methods::new("experiment"),
-               simdesign = methods::new("simdesign"),
-               ...)
-}
-
-
 #' Construct a new nl object
 #'
 #' @description Construct a new nl object
@@ -32,7 +11,7 @@ superclass <- function(nlversion = "6.0.2",
 #' @param experiment Holds a experiment S4 class object
 #' @param simdesign Holds a simdesign S4 class object
 #' @param ... ...
-#' @return superclass S4 class object
+#' @return nl S4 class object
 #' @details
 #'
 #' nl objects are the main class objects used in the nlrx package.
@@ -60,7 +39,7 @@ superclass <- function(nlversion = "6.0.2",
 #' outpath <- file.path("/home/out")
 #'
 #'
-#' nl <- nl(nlversion = "6.0.3",
+#' nl <- nl(nlversion = "6.1.1",
 #'          nlpath = netlogopath,
 #'          modelpath = modelpath,
 #'          obj_type = "nl_obj",
@@ -70,8 +49,71 @@ superclass <- function(nlversion = "6.0.2",
 #' @rdname nl
 #' @export
 
-nl <- function() {
-  methods::new("nl")
+nl <- function( nlversion = "6.1.1",
+                nlpath = character(),
+                modelpath = character(),
+                obj_type = "nl_obj",
+                ... ) {
+  methods::new("nl",
+               nlversion = nlversion,
+               nlpath = nlpath,
+               modelpath = modelpath,
+               obj_type = obj_type,
+               ... )
+}
+
+
+
+#' Construct a new r object
+#' #'
+#' @description Construct a new r object
+#'
+#' @param nlversion A character string defining the NetLogo version that is used
+#' @param nlpath Path to the NetLogo main directory matching the defined version
+#' @param modelpath Path to the NetLogo model file (*.nlogo) that is used for simulations
+#' @param obj_type A character string defining the object (nl, R, ...) (YYY)
+#' @param jvmmem Java virtual machine memory capacity in megabytes
+#' @param experiment Holds a experiment S4 class object
+#' @param simdesign Holds a simdesign S4 class object
+#' @param ... ...
+#' @return r S4 class object
+#' @details
+#'
+#' r objects...
+#'
+#' @examples
+#' # Example for Wolf Sheep Predation model from NetLogo models library:
+#' # Windows default NetLogo installation path (adjust to your needs!):
+#' netlogopath <- file.path("C:/Program Files/NetLogo 6.0.3")
+#' modelpath <- file.path(netlogopath, "app/models/Sample Models/Biology/Wolf Sheep Predation.nlogo")
+#' outpath <- file.path("C:/out")
+#' # Unix default NetLogo installation path (adjust to your needs!):
+#' netlogopath <- file.path("/home/NetLogo 6.0.3")
+#' modelpath <- file.path(netlogopath, "app/models/Sample Models/Biology/Wolf Sheep Predation.nlogo")
+#' outpath <- file.path("/home/out")
+#'
+#'
+#' r <- r(nlversion = "6.1.1",
+#'          nlpath = netlogopath,
+#'          modelpath = modelpath,
+#'          obj_type = "r_obj",
+#'          jvmmem = 1024)
+#'
+#' @name r
+#' @rdname r
+#' @export
+
+r <- function( nlversion = "6.1.1",
+                nlpath = character(),
+                modelpath = character(),
+                obj_type = "r_obj",
+                ... ) {
+  methods::new("r",
+               nlversion = nlversion,
+               nlpath = nlpath,
+               modelpath = modelpath,
+               obj_type = obj_type,
+               ... )
 }
 
 

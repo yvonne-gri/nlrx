@@ -5,7 +5,7 @@
 \title{Execute all R simulations from an R object}
 \usage{
 run_r_all(
-  nl,
+  r,
   split = 1,
   cleanup.csv = TRUE,
   cleanup.xml = TRUE,
@@ -13,7 +13,7 @@ run_r_all(
 )
 }
 \arguments{
-\item{nl}{nl object}
+\item{r}{r object}
 
 \item{split}{number of parts the job should be split into}
 
@@ -30,44 +30,7 @@ tibble with simulation output results
 Execute all R simulations from an R object with a defined experiment and simdesign
 }
 \details{
-run_r_all executes all simulations of the specified NetLogo model within the provided nl object.
-The function loops over all random seeds and all rows of the siminput table of the simdesign of nl.
-The loops are created by calling \link[furrr]{future_map_dfr}, which allows running the function either locally or on remote HPC machines.
-The logical cleanup variables can be set to FALSE to preserve temporary generated output files (e.g. for debugging).
-cleanup.csv deletes/keeps the temporary generated model output files from each run.
-cleanup.xml deletes/keeps the temporary generated experiment xml files from each run.
-cleanup.bat deletes/keeps the temporary generated batch/sh commandline files from each run.
-
-When using run_r_all in a parallelized environment (e.g. by setting up a future plan using the future package),
-the outer loop of this function (random seeds) creates jobs that are distributed to available cores of the current machine.
-The inner loop (siminputrows) distributes simulation tasks to these cores.
-However, it might be advantageous to split up large jobs into smaller jobs for example to reduce the total runtime of each job.
-This can be done using the split parameter. If split is > 1 the siminput matrix is split into smaller parts.
-Jobs are created for each combination of part and random seed.
-If the split parameter is set such that the siminput matrix can not be splitted into equal parts, the procedure will stop and throw an error message.
-\subsection{Debugging "Temporary simulation output file not found" error message:}{
-
-Whenever this error message appears it means that the simulation did not produce any output.
-Two main reasons can lead to this problem, either the simulation did not even start or the simulation crashed during runtime.
-Both can happen for several reasons and here are some hints for debugging this:
-\enumerate{
-\item Missing software:
-Make sure that java is installed and available from the terminal (java -version).
-Make sure that NetLogo is installed and available from the terminal.
-\item Wrong path definitions:
-Make sure your nlpath points to a folder containing NetLogo.
-Make sure your modelpath points to a *.nlogo model file.
-Make sure that the nlversion within your nl object matches the NetLogo version of your nlpath.
-Use the convenience function of nlrx for checking your nl object (print(nl), eval_variables_constants(nl)).
-\item Temporary files cleanup:
-Due to automatic temp file cleanup on unix systems temporary output might be deleted.
-Try reassigning the default temp folder for this R session (the unixtools package has a neat function).
-\item NetLogo runtime crashes:
-It can happen that your NetLogo model started but failed to produce output because of a NetLogo runtime error.
-Make sure your model is working correctly or track progress using print statements.
-Sometimes the java virtual machine crashes due to memory constraints.
-}
-}
+run_r_all executes all simulations ....
 }
 \examples{
 \dontrun{

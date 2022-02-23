@@ -7,6 +7,24 @@
 #' @keywords internal
 .initClasses <- function() {
 
+  simdesign <- methods::setClass("simdesign",
+                                 slots = list(
+                                   simmethod = "character",
+                                   siminput = "tbl",
+                                   simobject = "list",
+                                   simseeds = "numeric",
+                                   simoutput = "tbl"
+                                 ),
+
+                                 prototype = list(
+                                   simmethod = NA_character_,
+                                   siminput = tibble::tibble(),
+                                   simobject = list(),
+                                   simseeds = NA_integer_,
+                                   simoutput = tibble::tibble()
+                                 )
+  )
+
   experiment <- methods::setClass("experiment",
                                   slots = list(
                                     expname = "character",
@@ -49,24 +67,6 @@
                                   )
   )
 
-  simdesign <- methods::setClass("simdesign",
-                                 slots = list(
-                                   simmethod = "character",
-                                   siminput = "tbl",
-                                   simobject = "list",
-                                   simseeds = "numeric",
-                                   simoutput = "tbl"
-                                 ),
-
-                                 prototype = list(
-                                   simmethod = NA_character_,
-                                   siminput = tibble::tibble(),
-                                   simobject = list(),
-                                   simseeds = NA_integer_,
-                                   simoutput = tibble::tibble()
-                                 )
-  )
-
   # nl <- methods::setClass("nl",
   #
   #                         slots = list(
@@ -92,31 +92,65 @@
 
 
 
-  # Kopie von nl Klasse, wird zur superclass:
+  # Oberklasse, enthält alle allgemeinen Eigenschaften
 
   superclass <- methods::setClass("superclass",
 
                           slots = list(
-                            nlversion = "character",
-                            nlpath = "character",
-                            modelpath = "character",
-                            obj_type = "character",
                             jvmmem = "numeric",
                             experiment = "experiment",
                             simdesign = "simdesign"
                           ),
 
                           prototype = list(
-                            nlversion = NA_character_,
-                            nlpath = NA_character_,
-                            modelpath = NA_character_,
-                            obj_type = NA_character_,
                             jvmmem = 1024,
                             experiment = methods::new("experiment"),
                             simdesign = methods::new("simdesign")
                           )
   )
 
+
+  # nl Klasse, enthält alle spezifischen netlogo Informationen
+
   nl <- methods::setClass("nl",
-                          contains = superclass)
+
+                          slots = list(
+                            nlversion = "character",
+                            nlpath = "character",
+                            modelpath = "character",
+                            obj_type = "character"
+                          ),
+
+                          prototype = list(
+                            nlversion = NA_character_,
+                            nlpath = NA_character_,
+                            modelpath = NA_character_,
+                            obj_type = NA_character_
+                          ),
+
+                          contains = "superclass"
+  )
+
+
+  # R Objekt, exakt gleicher Inhalt wie das nl Objekt bisher, nur anderer "obj_type"
+
+  r <- methods::setClass("r",
+
+                         slots = list(
+                           nlversion = "character",
+                           nlpath = "character",
+                           modelpath = "character",
+                           obj_type = "character"
+                         ),
+
+                         prototype = list(
+                           nlversion = NA_character_,
+                           nlpath = NA_character_,
+                           modelpath = NA_character_,
+                           obj_type = NA_character_
+                         ),
+
+                         contains = "superclass"
+  )
+
 }
