@@ -4,13 +4,7 @@
 \alias{run_r_all}
 \title{Execute all R simulations from an R object}
 \usage{
-run_r_all(
-  r,
-  split = 1,
-  cleanup.csv = TRUE,
-  cleanup.xml = TRUE,
-  cleanup.bat = TRUE
-)
+run_r_all(r, split = 1)
 }
 \arguments{
 \item{r}{r object}
@@ -36,15 +30,15 @@ run_r_all executes all simulations ....
 \dontrun{
 
 # Load nl object from test data:
-nl <- nl_lhs
+r <- r_lhs
 
-# Execute all simulations from an nl object with properly attached simdesign.
-results <- run_r_all(nl)
+# Execute all simulations from an r object with properly attached simdesign.
+results <- run_r_all(r)
 
 # Run in parallel on local machine:
 library(future)
 plan(multisession)
-results <- run_r_all(nl)
+results <- run_r_all(r)
 
 }
 }

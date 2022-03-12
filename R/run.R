@@ -1,5 +1,5 @@
 #'
-#' @description Execute simulations from R object
+#' @description Execute simulations depending on the object (nl or R object)
 #'
 #' @param obj nl or R object
 #' @return tibble with simulation output results
@@ -11,14 +11,10 @@
 
 run_all <- function(obj) {
 
-  # test, welches Objekt übergeben wurde muss eingebaut werden
-
-  ## Check if 'object' is a valid object:
+  ## Check if 'object' is a valid object type:
   if (obj@obj_type == "nl_obj") {
     print(paste("nl object choosen"))
     return ( run_nl_all(obj) )
-    # return ( run_nl_one(used_obj) )
-    # return ( run_nl_dyn(used_obj) )
   }
 
   if (obj@obj_type == "r_obj") {

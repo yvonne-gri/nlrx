@@ -68,10 +68,8 @@ nl <- function( nlversion = "6.1.1",
 #' #'
 #' @description Construct a new r object
 #'
-#' @param nlversion A character string defining the NetLogo version that is used
-#' @param nlpath Path to the NetLogo main directory matching the defined version
-#' @param modelpath Path to the NetLogo model file (*.nlogo) that is used for simulations
-#' @param obj_type A character string defining the object (nl, R, ...) (YYY)
+#' @param modeltype A character string defining the modeltype
+#' @param obj_type A character string defining the object (nl, R, ...)
 #' @param jvmmem Java virtual machine memory capacity in megabytes
 #' @param experiment Holds a experiment S4 class object
 #' @param simdesign Holds a simdesign S4 class object
@@ -79,39 +77,35 @@ nl <- function( nlversion = "6.1.1",
 #' @return r S4 class object
 #' @details
 #'
-#' r objects...
+#' r objects... TEXT ANPASSEN!
+#' r objects are the main class objects used in the nlrx package.
+#' These objects store all information that is needed to run NetLogo simulations.
+#' nl objects are initialized with basic information on Netlogo and the model.
+#'
+#' After setting up the nl object, an experiment needs to be attached.
+#' The experiment class stores all information related to the NetLogo simulation experiment, such as runtime,
+#' variables, constants, measurements, and more.
+#'
+#' After attaching an experiment, different simdesign helper functions can be used to attach a simdesign to the nl object.
+#' The simdesign helper functions use the variable definitions from the experiment within the nl object to generate a parameter tibble for simulations.
 #'
 #' @examples
-#' # Example for Wolf Sheep Predation model from NetLogo models library:
-#' # Windows default NetLogo installation path (adjust to your needs!):
-#' netlogopath <- file.path("C:/Program Files/NetLogo 6.0.3")
-#' modelpath <- file.path(netlogopath, "app/models/Sample Models/Biology/Wolf Sheep Predation.nlogo")
-#' outpath <- file.path("C:/out")
-#' # Unix default NetLogo installation path (adjust to your needs!):
-#' netlogopath <- file.path("/home/NetLogo 6.0.3")
-#' modelpath <- file.path(netlogopath, "app/models/Sample Models/Biology/Wolf Sheep Predation.nlogo")
 #' outpath <- file.path("/home/out")
 #'
 #'
-#' r <- r(nlversion = "6.1.1",
-#'          nlpath = netlogopath,
-#'          modelpath = modelpath,
-#'          obj_type = "r_obj",
-#'          jvmmem = 1024)
+#' r <- r( modeltype = "used model type",
+#'         obj_type = "r_obj",
+#'         jvmmem = 1024)
 #'
 #' @name r
 #' @rdname r
 #' @export
 
-r <- function( nlversion = "6.1.1",
-                nlpath = character(),
-                modelpath = character(),
-                obj_type = "r_obj",
-                ... ) {
+r <- function( modeltype = "used model type",
+               obj_type = "r_obj",
+               ... ) {
   methods::new("r",
-               nlversion = nlversion,
-               nlpath = nlpath,
-               modelpath = modelpath,
+               modeltype = modeltype,
                obj_type = obj_type,
                ... )
 }

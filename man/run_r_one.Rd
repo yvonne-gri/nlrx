@@ -4,15 +4,7 @@
 \alias{run_r_one}
 \title{Execute one r simulation from a r object}
 \usage{
-run_r_one(
-  r,
-  seed,
-  siminputrow,
-  cleanup.csv = TRUE,
-  cleanup.xml = TRUE,
-  cleanup.bat = TRUE,
-  writeRDS = FALSE
-)
+run_r_one(r, seed, siminputrow)
 }
 \arguments{
 \item{r}{nl object}
@@ -41,8 +33,8 @@ run_r_one executes one simulation...
 \examples{
 \dontrun{
 
-# Load nl object from test data:
-r <- nl_lhs
+# Load r object from test data:
+r <- r_lhs
 
 # Run one simulation:
 results <- run_r_one(r = r,

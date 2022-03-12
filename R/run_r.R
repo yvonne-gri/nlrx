@@ -1,8 +1,4 @@
 
-
-## aktuell sind die Inhalte die gleichen wie in der "run_nl.R Datei"
-
-
 #' Execute all R simulations from an R object
 #'
 #' @description Execute all R simulations from an R object with a defined experiment and simdesign
@@ -22,15 +18,15 @@
 #' \dontrun{
 #'
 #' # Load nl object from test data:
-#' nl <- nl_lhs
+#' r <- r_lhs
 #'
-#' # Execute all simulations from an nl object with properly attached simdesign.
-#' results <- run_r_all(nl)
+#' # Execute all simulations from an r object with properly attached simdesign.
+#' results <- run_r_all(r)
 #'
 #' # Run in parallel on local machine:
 #' library(future)
 #' plan(multisession)
-#' results <- run_r_all(nl)
+#' results <- run_r_all(r)
 #'
 #' }
 #' @aliases run_r_all
@@ -38,11 +34,8 @@
 #'
 #' @export
 
-run_r_all <- function(r,
-                       split = 1,
-                       cleanup.csv = TRUE,
-                       cleanup.xml = TRUE,
-                       cleanup.bat = TRUE) {
+run_r_all <- function(r, split = 1) {
+
   ## Store the number of siminputrows
   siminput_nrow <- nrow(getsim(r, "siminput"))
   ## Check if split parameter is valid:
@@ -56,8 +49,10 @@ run_r_all <- function(r,
 
   ## Calculate size of one part:
   n_per_part <- siminput_nrow / split
+
   ## Generate job ids from seeds and parts:
   jobs <- as.list(expand.grid(getsim(r, "simseeds"), seq(1:split)))
+
   ## Setup progress bar:
   total_steps <- siminput_nrow * length(getsim(r, "simseeds"))
   p <- progressr::progressor(steps = total_steps)
@@ -69,7 +64,6 @@ run_r_all <- function(r,
       ## Extract current seed and part from job id:
       job_seed <- jobs[[1]][[job]]
       job_part <- jobs[[2]][[job]]
-
       ## Calculate rowids of the current part:
       rowids <-
         seq(1:n_per_part) +
@@ -79,24 +73,29 @@ run_r_all <- function(r,
       res_job <- furrr::future_map_dfr(
         rowids,
         function(siminputrow) {
+          # print(paste(siminputrow))
 
           # Update progress bar:
           p(sprintf("row %d/%d seed %d",
                     siminputrow, nrow(getsim(r, "siminput")),
                     job_seed))
+
           # Run simulation
           res_one <- run_r_one(
             r = r,
             seed = job_seed,
-            siminputrow = siminputrow,
-            cleanup.csv = cleanup.csv,
-            cleanup.xml = cleanup.xml,
-            cleanup.bat = cleanup.bat
+            siminputrow = siminputrow
           )
+          # print(paste("R object choosen3"))
+          # print(paste("res_one:"))
+          # print(res_one)
+          # print(paste("nach res_one"))
           return(res_one)
         })
+      # print(paste("vor res_job return"))
       return(res_job)
     })
+  # print(paste("vor nl_result return"))
   return(nl_results)
 }
 
@@ -121,8 +120,8 @@ run_r_all <- function(r,
 #' @examples
 #' \dontrun{
 #'
-#' # Load nl object from test data:
-#' r <- nl_lhs
+#' # Load r object from test data:
+#' r <- r_lhs
 #'
 #' # Run one simulation:
 #' results <- run_r_one(r = r,
@@ -136,56 +135,47 @@ run_r_all <- function(r,
 #' @export
 
 run_r_one <- function(r,
-                       seed,
-                       siminputrow,
-                       cleanup.csv = TRUE,
-                       cleanup.xml = TRUE,
-                       cleanup.bat = TRUE,
-                       writeRDS = FALSE) {
+                      seed,
+                      siminputrow) {
 
   util_eval_simdesign(r)
 
-  ## Write XML File:
-  xmlfile <-
-    tempfile(
-      pattern = paste0("nlrx_seed_", seed, "_row_", siminputrow, "_"),
-      fileext = ".xml"
-    )
-
-  util_create_sim_XML(r, seed, siminputrow, xmlfile)
-
-  ## Execute:
-  outfile <-
-    tempfile(
-      pattern = paste0("nlrx_seed_", seed, "_row_", siminputrow, "_"),
-      fileext = ".csv"
-    )
-
-  batchpath <- util_read_write_batch(r)
-  util_call_nl(r, xmlfile, outfile, batchpath)
-
-  ## Read results
-  nl_results <- util_gather_results(r, outfile, seed, siminputrow)
-
-  ## Delete temporary files:
-  cleanup.files <- list("csv" = outfile,
-                        "xml" = xmlfile,
-                        "bat" = batchpath)
-
-  util_cleanup(r, cleanup.csv, cleanup.xml, cleanup.bat, cleanup.files)
+  # print(paste("vor nlmr Aufruf"))
+  # print(r_new@simdesign@siminput$minl[siminputrow])
+  # print(r_new@simdesign@siminput$maxl[siminputrow])
 
 
-  if (isTRUE(writeRDS))
-  {
-    if(dir.exists(r@experiment@outpath))
-    {
-      filename <- paste0("nlrx_seed_", seed, "_row_", siminputrow, ".rds")
-      saveRDS(nl_results, file=file.path(r@experiment@outpath, filename))
-    } else
-    {
-      warning(paste0("Outpath of nl object does not exist on remote file system: ", r@experiment@outpath, ". Cannot write rds file!"))
-    }
+  if (r_new@simdesign@siminput$minl[siminputrow] > r_new@simdesign@siminput$maxl[siminputrow]) {
+
+    minl_tmp <- r_new@simdesign@siminput$minl[siminputrow]
+    r_new@simdesign@siminput$minl[siminputrow] <- r_new@simdesign@siminput$maxl[siminputrow]
+    r_new@simdesign@siminput$maxl[siminputrow] <- minl_tmp
+
   }
 
-  return(nl_results)
+
+  results <- NLMR::nlm_randomrectangularcluster(ncol = 50, nrow = 30, minl = round(r_new@simdesign@siminput$minl[siminputrow]), maxl = round(r_new@simdesign@siminput$maxl[siminputrow]))
+
+  print(landscapetools::show_landscape(results))
+
+
+  # print(paste("nach nlmr Aufruf"))
+  # print(results)
+
+  data <- data.frame(minl = round(r_new@simdesign@siminput$minl[siminputrow]),
+                     maxl = round(r_new@simdesign@siminput$maxl[siminputrow]),
+                     expname = environment(results@rotation@transfun)[["r_new"]]@experiment@expname,
+                     ncol = r_new@experiment@constants$ncol,
+                     nrow = r_new@experiment@constants$nrow)
+
+  # print(paste("nach data.frame Aufruf"))
+  # print(data)
+
+  tibble_data <- as_tibble(data)
+
+  # print(paste("nach as_tibble Aufruf"))
+  # print(tibble_data)
+
+
+  return(tibble_data)
 }

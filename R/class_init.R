@@ -67,33 +67,8 @@
                                   )
   )
 
-  # nl <- methods::setClass("nl",
-  #
-  #                         slots = list(
-  #                           nlversion = "character",
-  #                           nlpath = "character",
-  #                           modelpath = "character",
-  #                           obj_type = "character",
-  #                           jvmmem = "numeric",
-  #                           experiment = "experiment",
-  #                           simdesign = "simdesign"
-  #                         ),
-  #
-  #                         prototype = list(
-  #                           nlversion = NA_character_,
-  #                           nlpath = NA_character_,
-  #                           modelpath = NA_character_,
-  #                           obj_type = NA_character_,
-  #                           jvmmem = 1024,
-  #                           experiment = methods::new("experiment"),
-  #                           simdesign = methods::new("simdesign")
-  #                         )
-  # )
 
-
-
-  # Oberklasse, enthält alle allgemeinen Eigenschaften
-
+  # super class, contains all general properties
   superclass <- methods::setClass("superclass",
 
                           slots = list(
@@ -110,8 +85,7 @@
   )
 
 
-  # nl Klasse, enthält alle spezifischen netlogo Informationen
-
+  # nl class, contains all netlogo specific properties
   nl <- methods::setClass("nl",
 
                           slots = list(
@@ -132,21 +106,16 @@
   )
 
 
-  # R Objekt, exakt gleicher Inhalt wie das nl Objekt bisher, nur anderer "obj_type"
-
+  # r class, contains all specific properties for running different r projects
   r <- methods::setClass("r",
 
                          slots = list(
-                           nlversion = "character",
-                           nlpath = "character",
-                           modelpath = "character",
+                           modeltype = "character",
                            obj_type = "character"
                          ),
 
                          prototype = list(
-                           nlversion = NA_character_,
-                           nlpath = NA_character_,
-                           modelpath = NA_character_,
+                           modeltype = NA_character_,
                            obj_type = NA_character_
                          ),
 
