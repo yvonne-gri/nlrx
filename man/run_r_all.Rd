@@ -10,12 +10,6 @@ run_r_all(r, split = 1)
 \item{r}{r object}
 
 \item{split}{number of parts the job should be split into}
-
-\item{cleanup.csv}{TRUE/FALSE, if TRUE temporary created csv output files will be deleted after gathering results.}
-
-\item{cleanup.xml}{TRUE/FALSE, if TRUE temporary created xml output files will be deleted after gathering results.}
-
-\item{cleanup.bat}{TRUE/FALSE, if TRUE temporary created bat/sh output files will be deleted after gathering results.}
 }
 \value{
 tibble with simulation output results

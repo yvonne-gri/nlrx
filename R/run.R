@@ -1,4 +1,6 @@
 #'
+#' Execute simulations depending on the object
+#'
 #' @description Execute simulations depending on the object (nl or R object)
 #'
 #' @param obj nl or R object

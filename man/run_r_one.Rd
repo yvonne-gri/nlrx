@@ -12,14 +12,6 @@ run_r_one(r, seed, siminputrow)
 \item{seed}{a random seed for the NetLogo simulation}
 
 \item{siminputrow}{rownumber of the input tibble within the attached simdesign object that should be executed}
-
-\item{cleanup.csv}{TRUE/FALSE, if TRUE temporary created csv output files will be deleted after gathering results.}
-
-\item{cleanup.xml}{TRUE/FALSE, if TRUE temporary created xml output files will be deleted after gathering results.}
-
-\item{cleanup.bat}{TRUE/FALSE, if TRUE temporary created bat/sh output files will be deleted after gathering results.}
-
-\item{writeRDS}{TRUE/FALSE, if TRUE an rds file with the simulation results will be written to the defined outpath folder of the experiment within the nl object.}
 }
 \value{
 tibble with simulation output results

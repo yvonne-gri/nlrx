@@ -5,9 +5,6 @@
 #'
 #' @param r r object
 #' @param split number of parts the job should be split into
-#' @param cleanup.csv TRUE/FALSE, if TRUE temporary created csv output files will be deleted after gathering results.
-#' @param cleanup.xml TRUE/FALSE, if TRUE temporary created xml output files will be deleted after gathering results.
-#' @param cleanup.bat TRUE/FALSE, if TRUE temporary created bat/sh output files will be deleted after gathering results.
 #' @return tibble with simulation output results
 #' @details
 #'
@@ -108,10 +105,6 @@ run_r_all <- function(r, split = 1) {
 #' @param r nl object
 #' @param seed a random seed for the NetLogo simulation
 #' @param siminputrow rownumber of the input tibble within the attached simdesign object that should be executed
-#' @param cleanup.csv TRUE/FALSE, if TRUE temporary created csv output files will be deleted after gathering results.
-#' @param cleanup.xml TRUE/FALSE, if TRUE temporary created xml output files will be deleted after gathering results.
-#' @param cleanup.bat TRUE/FALSE, if TRUE temporary created bat/sh output files will be deleted after gathering results.
-#' @param writeRDS TRUE/FALSE, if TRUE an rds file with the simulation results will be written to the defined outpath folder of the experiment within the nl object.
 #' @return tibble with simulation output results
 #' @details
 #'
