@@ -72,13 +72,11 @@
   superclass <- methods::setClass("superclass",
 
                           slots = list(
-                            jvmmem = "numeric",
                             experiment = "experiment",
                             simdesign = "simdesign"
                           ),
 
                           prototype = list(
-                            jvmmem = 1024,
                             experiment = methods::new("experiment"),
                             simdesign = methods::new("simdesign")
                           )
@@ -92,14 +90,16 @@
                             nlversion = "character",
                             nlpath = "character",
                             modelpath = "character",
-                            obj_type = "character"
+                            obj_type = "character",
+                            jvmmem = "numeric"
                           ),
 
                           prototype = list(
                             nlversion = NA_character_,
                             nlpath = NA_character_,
                             modelpath = NA_character_,
-                            obj_type = NA_character_
+                            obj_type = NA_character_,
+                            jvmmem = 1024
                           ),
 
                           contains = "superclass"

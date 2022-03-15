@@ -2,14 +2,14 @@
 % Please edit documentation in R/run_r.R
 \name{run_r_one}
 \alias{run_r_one}
-\title{Execute one r simulation from a r object}
+\title{Execute one R simulation from a R object}
 \usage{
 run_r_one(r, seed, siminputrow)
 }
 \arguments{
-\item{r}{nl object}
+\item{r}{R object}
 
-\item{seed}{a random seed for the NetLogo simulation}
+\item{seed}{a random seed for the R simulation}
 
 \item{siminputrow}{rownumber of the input tibble within the attached simdesign object that should be executed}
 }
@@ -17,10 +17,21 @@ run_r_one(r, seed, siminputrow)
 tibble with simulation output results
 }
 \description{
-Execute one r simulation from a r object with a defined experiment and simdesign
+Execute one R simulation from a R object with a defined experiment and simdesign
 }
 \details{
-run_r_one executes one simulation...
+run_r_one executes one simulation of the specified R model within the provided R object.
+Therefore, the model call is generated as an R expression from the library name, the algorithm/function used
+and the constants and variables passed to the R object and it is evaluated.
+All variables and parameters are taken from the r object.
+This makes the run_r_one function adaptable to all algorithms.
+
+The random seed is set within the R model to control stochasticity.
+The siminputrow number defines which row of the input data tibble within
+the simdesign object of the provided R object is executed.
+If the output of the model is not a tibble, it must be converted before returning it.
+
+This function can be used to run single simulations of the given R model.
 }
 \examples{
 \dontrun{

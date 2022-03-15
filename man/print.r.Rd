@@ -19,6 +19,6 @@ Print content of the provided r object in a readable format.
 }
 \examples{
 
-print(nl_lhs)
+print(r_lhs)
 
 }

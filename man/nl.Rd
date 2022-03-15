@@ -9,6 +9,7 @@ nl(
   nlpath = character(),
   modelpath = character(),
   obj_type = "nl_obj",
+  jvmmem = 1024,
   ...
 )
 }
@@ -21,9 +22,9 @@ nl(
 
 \item{obj_type}{A character string defining the object (nl, R, ...) (YYY)}
 
-\item{...}{...}
-
 \item{jvmmem}{Java virtual machine memory capacity in megabytes}
+
+\item{...}{...}
 
 \item{experiment}{Holds a experiment S4 class object}
 

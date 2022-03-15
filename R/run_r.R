@@ -3,21 +3,32 @@
 #'
 #' @description Execute all R simulations from an R object with a defined experiment and simdesign
 #'
-#' @param r r object
+#' @param r R object
 #' @param split number of parts the job should be split into
 #' @return tibble with simulation output results
 #' @details
 #'
-#' run_r_all executes all simulations ....
+#' run_r_all executes all simulations of the specified R model within the provided R object.
+#' The function loops over all random seeds and all rows of the siminput table of the simdesign of R.
+#' The loops are created by calling \link[furrr]{future_map_dfr}, which allows running the function either locally or on remote HPC machines.
+#' The logical cleanup variables can be set to FALSE to preserve temporary generated output files (e.g. for debugging).
+#'
+#' When using run_r_all in a parallelized environment (e.g. by setting up a future plan using the future package),
+#' the outer loop of this function (random seeds) creates jobs that are distributed to available cores of the current machine.
+#' The inner loop (siminputrows) distributes simulation tasks to these cores.
+#' However, it might be advantageous to split up large jobs into smaller jobs for example to reduce the total runtime of each job.
+#' This can be done using the split parameter. If split is > 1 the siminput matrix is split into smaller parts.
+#' Jobs are created for each combination of part and random seed.
+#' If the split parameter is set such that the siminput matrix can not be splitted into equal parts, the procedure will stop and throw an error message.
 #'
 #'
 #' @examples
 #' \dontrun{
 #'
-#' # Load nl object from test data:
+#' # Load R object from test data:
 #' r <- r_lhs
 #'
-#' # Execute all simulations from an r object with properly attached simdesign.
+#' # Execute all simulations from an R object with properly attached simdesign.
 #' results <- run_r_all(r)
 #'
 #' # Run in parallel on local machine:
@@ -55,7 +66,7 @@ run_r_all <- function(r, split = 1) {
   p <- progressr::progressor(steps = total_steps)
 
   ## Execute on remote location
-  nl_results <- furrr::future_map_dfr(
+  r_results <- furrr::future_map_dfr(
     seq_along(jobs[[1]]),
     function(job) {
       ## Extract current seed and part from job id:
@@ -70,8 +81,6 @@ run_r_all <- function(r, split = 1) {
       res_job <- furrr::future_map_dfr(
         rowids,
         function(siminputrow) {
-          # print(paste(siminputrow))
-
           # Update progress bar:
           p(sprintf("row %d/%d seed %d",
                     siminputrow, nrow(getsim(r, "siminput")),
@@ -83,32 +92,39 @@ run_r_all <- function(r, split = 1) {
             seed = job_seed,
             siminputrow = siminputrow
           )
-          # print(paste("R object choosen3"))
-          # print(paste("res_one:"))
-          # print(res_one)
-          # print(paste("nach res_one"))
           return(res_one)
         })
-      # print(paste("vor res_job return"))
       return(res_job)
     })
-  # print(paste("vor nl_result return"))
-  return(nl_results)
+  return(r_results)
 }
 
 
 
-#' Execute one r simulation from a r object
+#' Execute one R simulation from a R object
 #'
-#' @description Execute one r simulation from a r object with a defined experiment and simdesign
+#' @description Execute one R simulation from a R object with a defined experiment and simdesign
 #'
-#' @param r nl object
-#' @param seed a random seed for the NetLogo simulation
+#' @param r R object
+#' @param seed a random seed for the R simulation
 #' @param siminputrow rownumber of the input tibble within the attached simdesign object that should be executed
 #' @return tibble with simulation output results
 #' @details
 #'
-#' run_r_one executes one simulation...
+#' run_r_one executes one simulation of the specified R model within the provided R object.
+#' Therefore, the model call is generated as an R expression from the library name, the algorithm/function used
+#' and the constants and variables passed to the R object and it is evaluated.
+#' All variables and parameters are taken from the r object.
+#' This makes the run_r_one function adaptable to all algorithms.
+
+#'
+#' The random seed is set within the R model to control stochasticity.
+#' The siminputrow number defines which row of the input data tibble within
+#' the simdesign object of the provided R object is executed.
+#' If the output of the model is not a tibble, it must be converted before returning it.
+#'
+#' This function can be used to run single simulations of the given R model.
+#'
 #'
 #' @examples
 #' \dontrun{
@@ -131,44 +147,72 @@ run_r_one <- function(r,
                       seed,
                       siminputrow) {
 
+  # Evaluate all slots of a simdesign object
   util_eval_simdesign(r)
 
-  # print(paste("vor nlmr Aufruf"))
-  # print(r_new@simdesign@siminput$minl[siminputrow])
-  # print(r_new@simdesign@siminput$maxl[siminputrow])
 
+  # Generate the generic model call expression
+  call <- paste0( r@modeltype, '::', r@experiment@expname, '( ' )
 
-  if (r_new@simdesign@siminput$minl[siminputrow] > r_new@simdesign@siminput$maxl[siminputrow]) {
-
-    minl_tmp <- r_new@simdesign@siminput$minl[siminputrow]
-    r_new@simdesign@siminput$minl[siminputrow] <- r_new@simdesign@siminput$maxl[siminputrow]
-    r_new@simdesign@siminput$maxl[siminputrow] <- minl_tmp
-
+  if ( length(r@experiment@constants != 0 ) ) {
+    for ( i in 1:length(r@experiment@constants) ) {
+      if ( i == (length(r@experiment@constants) + length(r@experiment@variables) ))
+        call <- paste0( call, names(r@experiment@constants[i]), ' = ', r@experiment@constants[[i]], ' )'  )
+      else
+        call <- paste0( call, names(r@experiment@constants[i]), ' = ', r@experiment@constants[[i]], ', '  )
+    }
   }
 
+  if ( length(r@experiment@variables != 0 ) ) {
+    for ( j in 1:length(r@experiment@variables) ) {
+      if ( j == (length(r@experiment@constants) + length(r@experiment@variables) ))
+        call <- paste0( call, names(r@experiment@variables[j]), ' = ', r@experiment@variables[[j]], ' )'  )
+      else
+        call <- paste0( call, names(r@experiment@variables[j]), ' = ', r@experiment@variables[[j]], ', '  )
+    }
+  }
 
-  results <- NLMR::nlm_randomrectangularcluster(ncol = 50, nrow = 30, minl = round(r_new@simdesign@siminput$minl[siminputrow]), maxl = round(r_new@simdesign@siminput$maxl[siminputrow]))
+  # Print call for visualization
+  print(call)
 
+  # Evaluate the call expression
+  results <- eval(parse(text = call))
+
+  # Graphical output of the model call
   print(landscapetools::show_landscape(results))
 
 
-  # print(paste("nach nlmr Aufruf"))
-  # print(results)
+  # Convert model output to data-frame, the colnames are handled seperately
+  data_frame <- data.frame( r@modeltype, r@experiment@expname)
+  vector_colnames <- c( "modeltype", "expname" )
 
-  data <- data.frame(minl = round(r_new@simdesign@siminput$minl[siminputrow]),
-                     maxl = round(r_new@simdesign@siminput$maxl[siminputrow]),
-                     expname = environment(results@rotation@transfun)[["r_new"]]@experiment@expname,
-                     ncol = r_new@experiment@constants$ncol,
-                     nrow = r_new@experiment@constants$nrow)
+  counter <- 3   # Counter for assigning the colnames
 
-  # print(paste("nach data.frame Aufruf"))
-  # print(data)
+  if ( length(r@experiment@variables != 0 ) ) {
+    for ( i in 1:length(r@experiment@variables) ) {
+      data_frame <- data.frame( data_frame, r@experiment@variables[[i]] )
+      vector_colnames[counter] <- c( names(r@experiment@variables[i]) )
+      counter <- counter+1
+    }
+  }
 
-  tibble_data <- as_tibble(data)
+  if ( length(r@experiment@constants != 0 ) ) {
+    for ( i in 1:length(r@experiment@constants) ) {
+      data_frame <- data.frame( data_frame, r@experiment@constants[[i]] )
+      vector_colnames[counter] <- c( names(r@experiment@constants[i]) )
+      counter <- counter+1
+    }
+  }
 
-  # print(paste("nach as_tibble Aufruf"))
-  # print(tibble_data)
+  # Assign the colnames
+  colnames(data_frame) <- vector_colnames
+
+  # Extension of the data_frame with the results
+  data_frame <- data.frame(data_frame, raster::as.data.frame(results))
 
 
-  return(tibble_data)
+  # Convert the model output into tibble
+  tibble_results <- as_tibble(data_frame)
+
+  return(tibble_results)
 }

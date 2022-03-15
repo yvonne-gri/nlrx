@@ -7,7 +7,7 @@
 run_r_all(r, split = 1)
 }
 \arguments{
-\item{r}{r object}
+\item{r}{R object}
 
 \item{split}{number of parts the job should be split into}
 }
@@ -18,15 +18,26 @@ tibble with simulation output results
 Execute all R simulations from an R object with a defined experiment and simdesign
 }
 \details{
-run_r_all executes all simulations ....
+run_r_all executes all simulations of the specified R model within the provided R object.
+The function loops over all random seeds and all rows of the siminput table of the simdesign of R.
+The loops are created by calling \link[furrr]{future_map_dfr}, which allows running the function either locally or on remote HPC machines.
+The logical cleanup variables can be set to FALSE to preserve temporary generated output files (e.g. for debugging).
+
+When using run_r_all in a parallelized environment (e.g. by setting up a future plan using the future package),
+the outer loop of this function (random seeds) creates jobs that are distributed to available cores of the current machine.
+The inner loop (siminputrows) distributes simulation tasks to these cores.
+However, it might be advantageous to split up large jobs into smaller jobs for example to reduce the total runtime of each job.
+This can be done using the split parameter. If split is > 1 the siminput matrix is split into smaller parts.
+Jobs are created for each combination of part and random seed.
+If the split parameter is set such that the siminput matrix can not be splitted into equal parts, the procedure will stop and throw an error message.
 }
 \examples{
 \dontrun{
 
-# Load nl object from test data:
+# Load R object from test data:
 r <- r_lhs
 
-# Execute all simulations from an r object with properly attached simdesign.
+# Execute all simulations from an R object with properly attached simdesign.
 results <- run_r_all(r)
 
 # Run in parallel on local machine:

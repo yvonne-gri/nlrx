@@ -8,7 +8,7 @@
 #'
 #' @examples
 #'
-#' print(nl_lhs)
+#' print(r_lhs)
 #'
 #' @aliases print.r
 #' @rdname print.r
@@ -43,13 +43,9 @@ util_print.r <- function(x, ...) {
 
   cat(style_heading(paste0("\n", "   R OBJECT   ", "\n")))
 
-  cat("Used model type = ")
+  cat("model package = ")
   output <- paste0(x@modeltype, "\n")
   cat(ifelse(nchar(x@modeltype) > 0, style_def(output), style_na(output)))
-
-  cat("JVM memory      = ")
-  output <- paste0(x@jvmmem, "\n")
-  cat(ifelse(!is.na(x@jvmmem), style_def(output), style_na(output)))
 
 }
 
@@ -73,10 +69,6 @@ util_print.summary <- function(x, ...)
 
   cat(style_heading(paste0("\n", "   SUMMARY   ", "\n")))
 
-  cat("valid jvm memory: ")
-  output <- ifelse(is.numeric(x@jvmmem), style_def("\u2713"), style_na("\u2717"))
-  cat(paste0(output, "\n"))
-
   cat("valid experiment name: ")
   output <- ifelse(is.na(x@experiment@expname) | grepl("\\s", getexp(x, "expname")), style_na("\u2717"), style_def("\u2713"))
   cat(paste0(output, "\n"))
@@ -84,11 +76,6 @@ util_print.summary <- function(x, ...)
   cat("outpath exists on local system: ")
   output <- ifelse(dir.exists(x@experiment@outpath), style_def("\u2713"), style_na("\u2717"))
   cat(paste0(output, "\n"))
-
-  # cat("setup and go defined: ")
-  # output <- ifelse(!all(is.na(x@experiment@idsetup), is.na(x@experiment@idgo)), style_def("\u2713"), style_na("\u2717"))
-  # cat(paste0(output, "\n"))
-
 
   cat("variables defined: ")
   output <- ifelse(length(x@experiment@variables) > 0, style_def("\u2713"), style_na("\u2717"))
@@ -98,20 +85,6 @@ util_print.summary <- function(x, ...)
   cat("constants defined: ")
   output <- ifelse(length(x@experiment@constants) > 0, style_def("\u2713"), style_na("\u2717"))
   cat(paste0(output, "\n"))
-
-
-  # cat("metrics defined: ")
-  # output <- ifelse(length(x@experiment@metrics) > 0, style_def("\u2713"), style_na("\u2717"))
-  # cat(paste0(output, "\n"))
-  #
-  # cat("spatial Metrics defined: ")
-  # output <- ifelse(length(x@experiment@metrics.turtles) > 0 | length(x@experiment@metrics.patches) > 0 | length(x@experiment@metrics.links) > 0,
-  #                  style_def("\u2713"), style_na("\u2717"))
-  # cat(paste0(output, "\n"))
-
-
-
-
 
   cat("simdesign attached: ")
   output <- ifelse(!is.na(x@simdesign@simmethod), style_def("\u2713"), style_na("\u2717"))
@@ -139,12 +112,6 @@ util_print.summary <- function(x, ...)
   output <- ifelse(nrow(x@simdesign@simoutput) > 0, style_def("\u2713"), style_na("\u2717"))
   cat(paste0(output, "\n"))
 
-  cat("number of runs calculated: ")
-  output <- ifelse(nrow(x@simdesign@simoutput) > 0,
-                   style_def(length(unique(paste(x@simdesign@simoutput$'random-seed', x@simdesign@simoutput$siminputrow)))),
-                   style_na("\u2717"))
-  cat(paste0(output, "\n"))
-
 }
 
 #' Print experiment object content
@@ -167,7 +134,7 @@ util_print.experiment <- function(x, ...)
 
   cat(style_heading(paste0("\n", "   EXPERIMENT   ", "\n")))
 
-  cat("Experiment name        = ")
+  cat("model function         = ")
   output <- paste0(x@expname, "\n")
   cat(ifelse(!is.na(x@expname), style_def(output), style_na(output)))
 
@@ -175,25 +142,9 @@ util_print.experiment <- function(x, ...)
   output <- paste0(x@outpath, "\n")
   cat(ifelse(!is.na(x@outpath), style_def(output), style_na(output)))
 
-  cat("Final procedure(s)     = ")
-  output <- paste0(paste(x@idfinal, collapse=", "), "\n")
-  cat(ifelse(!all(is.na(x@idfinal)), style_def(output), style_opt(output)))
-
-  cat("Run nr. widget name    = ")
-  output <- paste0(x@idrunnum, "\n")
-  cat(ifelse(!is.na(x@idrunnum), style_def(output), style_opt(output)))
-
   cat("Runtime (ticks)        = ")
   output <- paste0(x@runtime, "\n")
   cat(ifelse(!is.na(x@runtime), style_def(output), style_na(output)))
-
-  cat("Report output on ticks = ")
-  output <- paste0(paste(x@evalticks, collapse=", "), "\n")
-  cat(ifelse(!all(is.na(x@evalticks)), style_def(output), style_opt(output)))
-
-  cat("Stop condition         = ")
-  output <- paste0(x@stopcond, "\n")
-  cat(ifelse(!is.na(x@stopcond), style_def(output), style_opt(output)))
 
   cat(paste0("\n", "Variable parameters (input)", "\n"))
   output <- paste0(paste(paste0("    ", names(x@variables)), x@variables, collapse="\n", sep=" = "), "\n")

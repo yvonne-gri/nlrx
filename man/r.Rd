@@ -2,8 +2,7 @@
 % Please edit documentation in R/class_constr.R
 \name{r}
 \alias{r}
-\title{Construct a new r object
-#'}
+\title{Construct a new R object}
 \usage{
 r(modeltype = "used model type", obj_type = "r_obj", ...)
 }
@@ -14,37 +13,32 @@ r(modeltype = "used model type", obj_type = "r_obj", ...)
 
 \item{...}{...}
 
-\item{jvmmem}{Java virtual machine memory capacity in megabytes}
-
 \item{experiment}{Holds a experiment S4 class object}
 
 \item{simdesign}{Holds a simdesign S4 class object}
 }
 \value{
-r S4 class object
+R S4 class object
 }
 \description{
-Construct a new r object
+Construct a new R object
 }
 \details{
-r objects... TEXT ANPASSEN!
-r objects are the main class objects used in the nlrx package.
-These objects store all information that is needed to run NetLogo simulations.
-nl objects are initialized with basic information on Netlogo and the model.
+R objects are class objects suitable for simulation of different R packages.
+These objects store all information that is needed to run the simulations.
+R objects are initialized with the used package function and the object type (R object).
 
-After setting up the nl object, an experiment needs to be attached.
-The experiment class stores all information related to the NetLogo simulation experiment, such as runtime,
-variables, constants, measurements, and more.
+After setting up the r object, an experiment needs to be attached.
+The experiment class stores all information related to a NetLogo simulation experiment, so it has to be reduced to the essential information needed to run the R simulation.
 
-After attaching an experiment, different simdesign helper functions can be used to attach a simdesign to the nl object.
-The simdesign helper functions use the variable definitions from the experiment within the nl object to generate a parameter tibble for simulations.
+After attaching an experiment, different simdesign helper functions can be used to attach a simdesign to the R object.
+The simdesign helper functions use the variable definitions from the experiment within the R object to generate a parameter tibble for simulations.
 }
 \examples{
 outpath <- file.path("/home/out")
 
 
 r <- r( modeltype = "used model type",
-        obj_type = "r_obj",
-        jvmmem = 1024)
+        obj_type = "r_obj")
 
 }
